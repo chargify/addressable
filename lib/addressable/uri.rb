@@ -1214,7 +1214,7 @@ module Addressable
       return ((self.query.split("&").map do |pair|
         pair.split("=")
       end).inject({}) do |accumulator, (key, value)|
-        value = true if value.nil?
+        value = '' if value.nil?
         key = self.class.unencode_component(key)
         if value != true
           value = self.class.unencode_component(value).gsub(/\+/, " ")
