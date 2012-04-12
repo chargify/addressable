@@ -1,30 +1,25 @@
-# encoding:utf-8
-#--
-# Addressable, Copyright (c) 2006-2007 Bob Aman
+# coding: utf-8
+# Copyright (C) 2006-2011 Bob Aman
 #
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
 #
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#++
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
+
+# Have to use RubyGems to load the idn gem.
+require "rubygems"
 
 require "addressable/idna"
 
-describe Addressable::IDNA, "when converting from unicode to ASCII" do
+shared_examples_for "converting from unicode to ASCII" do
   it "should convert 'www.google.com' correctly" do
     Addressable::IDNA.to_ascii("www.google.com").should == "www.google.com"
   end
@@ -131,7 +126,7 @@ describe Addressable::IDNA, "when converting from unicode to ASCII" do
   end
 end
 
-describe Addressable::IDNA, "when converting from ASCII to unicode" do
+shared_examples_for "converting from ASCII to unicode" do
   it "should convert 'www.google.com' correctly" do
     Addressable::IDNA.to_unicode("www.google.com").should == "www.google.com"
   end
@@ -191,4 +186,31 @@ describe Addressable::IDNA, "when converting from ASCII to unicode" do
       "xn--4ud"
     ).should == "\341\206\265"
   end
+end
+
+describe Addressable::IDNA, "when using the pure-Ruby implementation" do
+  before do
+    Addressable.send(:remove_const, :IDNA)
+    load "addressable/idna/pure.rb"
+  end
+
+  it_should_behave_like "converting from unicode to ASCII"
+  it_should_behave_like "converting from ASCII to unicode"
+end
+
+begin
+  require "idn"
+
+  describe Addressable::IDNA, "when using the native-code implementation" do
+    before do
+      Addressable.send(:remove_const, :IDNA)
+      load "addressable/idna/native.rb"
+    end
+
+    it_should_behave_like "converting from unicode to ASCII"
+    it_should_behave_like "converting from ASCII to unicode"
+  end
+rescue LoadError
+  # Cannot test the native implementation without libidn support.
+  warn('Could not load native IDN implementation.')
 end

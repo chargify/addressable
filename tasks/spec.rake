@@ -3,17 +3,28 @@ namespace :spec do
     t.libs = %w[lib spec]
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color', '--format', 'specdoc']
-    
+
     t.rcov = RCOV_ENABLED
     t.rcov_opts = [
+      '--exclude', 'lib\\/compat',
       '--exclude', 'spec',
+      '--exclude', '\\.rvm\\/gems',
       '--exclude', '1\\.8\\/gems',
       '--exclude', '1\\.9\\/gems',
-      '--exclude', 'addressable\\/idna\\.rb', # unicode tables too big
+      '--exclude', '\\.rvm',
+      '--exclude', '\\/Library\\/Ruby',
+      '--exclude', 'addressable\\/idna' # environment dependant
     ]
   end
 
   Spec::Rake::SpecTask.new(:normal) do |t|
+    t.libs = %w[lib spec]
+    t.spec_files = FileList['spec/**/*_spec.rb'].exclude(/compat/)
+    t.spec_opts = ['--color', '--format', 'specdoc']
+    t.rcov = false
+  end
+
+  Spec::Rake::SpecTask.new(:all) do |t|
     t.libs = %w[lib spec]
     t.spec_files = FileList['spec/**/*_spec.rb']
     t.spec_opts = ['--color', '--format', 'specdoc']
@@ -22,7 +33,9 @@ namespace :spec do
 
   desc "Generate HTML Specdocs for all specs"
   Spec::Rake::SpecTask.new(:specdoc) do |t|
-    specdoc_path = File.expand_path(File.join(File.dirname(__FILE__), '..', 'specdoc'))
+    specdoc_path = File.expand_path(
+      File.join(File.dirname(__FILE__), '..', 'specdoc')
+    )
     Dir.mkdir(specdoc_path) if !File.exist?(specdoc_path)
 
     output_file = File.join(specdoc_path, 'index.html')

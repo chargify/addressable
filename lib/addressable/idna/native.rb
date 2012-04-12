@@ -16,15 +16,28 @@
 #++
 
 
-# Used to prevent the class/module from being loaded more than once
-if !defined?(Addressable::VERSION)
-  module Addressable
-    module VERSION
-      MAJOR = 2
-      MINOR = 2
-      TINY  = 7
+require "idn"
 
-      STRING = [MAJOR, MINOR, TINY].join('.')
+module Addressable
+  module IDNA
+    def self.punycode_encode(value)
+      IDN::Punycode.encode(value)
+    end
+
+     def self.punycode_decode(value)
+       IDN::Punycode.decode(value)
+     end
+
+    def self.unicode_normalize_kc(value)
+      IDN::Stringprep.nfkc_normalize(value)
+    end
+
+    def self.to_ascii(value)
+      IDN::Idna.toASCII(value)
+    end
+
+    def self.to_unicode(value)
+      IDN::Idna.toUnicode(value)
     end
   end
 end

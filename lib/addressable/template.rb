@@ -1,26 +1,20 @@
 # encoding:utf-8
 #--
-# Addressable, Copyright (c) 2006-2008 Bob Aman
+# Copyright (C) 2006-2011 Bob Aman
 #
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
 #
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 #++
+
 
 require "addressable/version"
 require "addressable/uri"
@@ -63,7 +57,7 @@ module Addressable
       #
       # @param [Addressable::URI] uri
       #   The URI that the template was matched against.
-      def initialize(uri, template, mapping) # :nodoc:
+      def initialize(uri, template, mapping)
         @uri = uri.dup.freeze
         @template = template
         @mapping = mapping.dup.freeze
@@ -154,20 +148,22 @@ module Addressable
     #
     # @param [#restore, #match] processor
     #   A template processor object may optionally be supplied.
-    #
-    # The object should respond to either the <tt>restore</tt> or
-    # <tt>match</tt> messages or both.  The <tt>restore</tt> method should take
-    # two parameters: [String] name and [String] value.  The <tt>restore</tt>
-    # method should reverse any transformations that have been performed on the
-    # value to ensure a valid URI.  The <tt>match</tt> method should take a
-    # single parameter: [String] name.  The <tt>match</tt> method should return
-    # a <tt>String</tt> containing a regular expression capture group for
-    # matching on that particular variable.  The default value is ".*?".  The
-    # <tt>match</tt> method has no effect on multivariate operator expansions.
+    #   
+    #   The object should respond to either the <tt>restore</tt> or
+    #   <tt>match</tt> messages or both. The <tt>restore</tt> method should
+    #   take two parameters: `[String] name` and `[String] value`.
+    #   The <tt>restore</tt> method should reverse any transformations that
+    #   have been performed on the value to ensure a valid URI.
+    #   The <tt>match</tt> method should take a single
+    #   parameter: `[String] name`.  The <tt>match</tt> method should return
+    #   a <tt>String</tt> containing a regular expression capture group for
+    #   matching on that particular variable. The default value is `".*?"`.
+    #   The <tt>match</tt> method has no effect on multivariate operator
+    #   expansions.
     #
     # @return [Hash, NilClass]
-    # The <tt>Hash</tt> mapping that was extracted from the URI, or
-    # <tt>nil</tt> if the URI didn't match the template.
+    #   The <tt>Hash</tt> mapping that was extracted from the URI, or
+    #   <tt>nil</tt> if the URI didn't match the template.
     #
     # @example
     #   class ExampleProcessor
@@ -214,20 +210,22 @@ module Addressable
     #
     # @param [#restore, #match] processor
     #   A template processor object may optionally be supplied.
-    #
-    # The object should respond to either the <tt>restore</tt> or
-    # <tt>match</tt> messages or both. The <tt>restore</tt> method should take
-    # two parameters: [String] name and [String] value. The <tt>restore</tt>
-    # method should reverse any transformations that have been performed on the
-    # value to ensure a valid URI. The <tt>match</tt> method should take a
-    # single parameter: [String] name. The <tt>match</tt> method should return
-    # a <tt>String</tt> containing a regular expression capture group for
-    # matching on that particular variable. The default value is ".*?". The
-    # <tt>match</tt> method has no effect on multivariate operator expansions.
+    #   
+    #   The object should respond to either the <tt>restore</tt> or
+    #   <tt>match</tt> messages or both. The <tt>restore</tt> method should
+    #   take two parameters: `[String] name` and `[String] value`.
+    #   The <tt>restore</tt> method should reverse any transformations that
+    #   have been performed on the value to ensure a valid URI.
+    #   The <tt>match</tt> method should take a single
+    #   parameter: `[String] name`. The <tt>match</tt> method should return
+    #   a <tt>String</tt> containing a regular expression capture group for
+    #   matching on that particular variable. The default value is `".*?"`.
+    #   The <tt>match</tt> method has no effect on multivariate operator
+    #   expansions.
     #
     # @return [Hash, NilClass]
-    # The <tt>Hash</tt> mapping that was extracted from the URI, or
-    # <tt>nil</tt> if the URI didn't match the template.
+    #   The <tt>Hash</tt> mapping that was extracted from the URI, or
+    #   <tt>nil</tt> if the URI didn't match the template.
     #
     # @example
     #   class ExampleProcessor
@@ -495,13 +493,13 @@ module Addressable
     #
     # @return [Hash] Mapping of template variables to their defaults
     def variable_defaults
-      @variable_defaults ||= Hash[*ordered_variable_defaults.reject { |k,v| v.nil? }.flatten]
+      @variable_defaults ||=
+        Hash[*ordered_variable_defaults.reject { |k, v| v.nil? }.flatten]
     end
 
   private
-
     def ordered_variable_defaults
-      @ordered_variable_defaults ||= begin
+      @ordered_variable_defaults ||= (begin
         expansions, expansion_regexp = parse_template_pattern(pattern)
 
         expansions.inject([]) do |result, expansion|
@@ -514,7 +512,7 @@ module Addressable
           end
           result
         end
-      end
+      end)
     end
 
     ##
@@ -800,9 +798,9 @@ module Addressable
     # @return [Array]
     #   A tuple of the operator, argument, variables, and mapping.
     def parse_template_expansion(capture, mapping={})
-      operator, argument, variables = capture[1...-1].split("|")
+      operator, argument, variables = capture[1...-1].split("|", -1)
       operator.gsub!(/^\-/, "")
-      variables = variables.split(",")
+      variables = variables.split(",", -1)
       mapping = (variables.inject({}) do |accu, var|
         varname, _, vardefault = var.scan(/^(.+?)(=(.*))?$/)[0]
         accu[varname] = vardefault
@@ -933,7 +931,7 @@ module Addressable
       values.pop if values[-1] == ""
 
       if processor && processor.respond_to?(:restore)
-        values.map! { |value| processor.restore(variables.first, value) }
+        values.map! { |val| processor.restore(variables.first, val) }
       end
       values = values.first if values.size == 1
       if mapping[variables.first] == nil || mapping[variables.first] == values
@@ -967,7 +965,7 @@ module Addressable
       values = value.split(argument, -1)
       values.pop if values[-1] == ""
       if processor && processor.respond_to?(:restore)
-        values.map! { |value| processor.restore(variables.first, value) }
+        values.map! { |val| processor.restore(variables.first, val) }
       end
       values = values.first if values.size == 1
       if mapping[variables.first] == nil || mapping[variables.first] == values
@@ -1036,7 +1034,7 @@ module Addressable
       values = value.split(argument, -1)
       values.pop if values[-1] == ""
       if processor && processor.respond_to?(:restore)
-        values.map! { |value| processor.restore(variables.first, value) }
+        values.map! { |val| processor.restore(variables.first, val) }
       end
       if mapping[variables.first] == nil || mapping[variables.first] == values
         mapping[variables.first] = values

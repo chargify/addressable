@@ -1,26 +1,18 @@
-# encoding:utf-8
-#--
-# Addressable, Copyright (c) 2006-2007 Bob Aman
+# coding: utf-8
+# Copyright (C) 2006-2011 Bob Aman
 #
-# Permission is hereby granted, free of charge, to any person obtaining
-# a copy of this software and associated documentation files (the
-# "Software"), to deal in the Software without restriction, including
-# without limitation the rights to use, copy, modify, merge, publish,
-# distribute, sublicense, and/or sell copies of the Software, and to
-# permit persons to whom the Software is furnished to do so, subject to
-# the following conditions:
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
 #
-# The above copyright notice and this permission notice shall be
-# included in all copies or substantial portions of the Software.
+#        http://www.apache.org/licenses/LICENSE-2.0
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-#++
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
 
 require "addressable/template"
 
@@ -1174,11 +1166,11 @@ describe Addressable::URI, "when given the mapping supplied in " +
 
   it "should result in ':%E1%B9%A1:%E1%B9%A1:' " +
       "when used to expand '{-neg|:|corge}{-suffix|:|plugh}'" do
+    # Note: We need to check the path, because technically, this is an
+    # invalid URI.
     Addressable::Template.new(
       "{-neg|:|corge}{-suffix|:|plugh}"
-    ).expand(
-      @mapping
-    ).to_s.should == ":%E1%B9%A1:%E1%B9%A1:"
+    ).expand(@mapping).path.should == ":%E1%B9%A1:%E1%B9%A1:"
   end
 
   it "should result in '../ben%20%26%20jerrys/' " +
@@ -1201,11 +1193,11 @@ describe Addressable::URI, "when given the mapping supplied in " +
 
   it "should result in ':200:' " +
       "when used to expand ':{1-a_b.c}:'" do
+    # Note: We need to check the path, because technically, this is an
+    # invalid URI.
     Addressable::Template.new(
       ":{1-a_b.c}:"
-    ).expand(
-      @mapping
-    ).to_s.should == ":200:"
+    ).expand(@mapping).path.should == ":200:"
   end
 end
 
@@ -1474,6 +1466,15 @@ describe Addressable::Template, "with a partially expanded template" do
   it "should produce the same result when fully expanded" do
     @initial_template.expand({"one" => "1", "two" => "2"}).should ==
       @partial_template.expand({"two" => "2"})
+  end
+
+  it "should raise an error if the template is expanded with bogus values" do
+    (lambda do
+      @initial_template.expand({"one" => Object.new, "two" => Object.new})
+    end).should raise_error(TypeError)
+    (lambda do
+      @partial_template.expand({"two" => Object.new})
+    end).should raise_error(TypeError)
   end
 end
 

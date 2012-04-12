@@ -1,5 +1,4 @@
-# encoding:utf-8
-#--
+# coding: utf-8
 # Copyright (C) 2006-2011 Bob Aman
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,18 +12,15 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-#++
 
 
-# Used to prevent the class/module from being loaded more than once
-if !defined?(Addressable::VERSION)
-  module Addressable
-    module VERSION
-      MAJOR = 2
-      MINOR = 2
-      TINY  = 7
+require "addressable/uri"
+require "net/http"
 
-      STRING = [MAJOR, MINOR, TINY].join('.')
-    end
+describe Net::HTTP do
+  it "should be compatible with Addressable" do
+    response_body =
+      Net::HTTP.get(Addressable::URI.parse('http://www.google.com/'))
+    response_body.should_not be_nil
   end
 end

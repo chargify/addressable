@@ -8,7 +8,7 @@ namespace :doc do
     rdoc.options << "--line-numbers" << "--inline-source" <<
       "--accessor" << "cattr_accessor=object" << "--charset" << "utf-8"
     rdoc.template = "#{ENV["template"]}.rb" if ENV["template"]
-    rdoc.rdoc_files.include("README", "CHANGELOG", "LICENSE")
+    rdoc.rdoc_files.include("README.md", "CHANGELOG", "LICENSE")
     rdoc.rdoc_files.include("lib/**/*.rb")
   end
 
@@ -22,8 +22,5 @@ namespace :doc do
     rm_r "ri" rescue nil
   end
 end
-
-desc "Alias to doc:rdoc"
-task "doc" => "doc:rdoc"
 
 task "clobber" => ["doc:clobber_rdoc", "doc:clobber_ri"]
